@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -15,7 +16,7 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    /*  appBar: AppBar(
+      /*  appBar: AppBar(
         title: const Text('Menu'),
       ), */
       body: FutureBuilder(
@@ -44,12 +45,17 @@ class _MenuScreenState extends State<MenuScreen> {
                         topRight: Radius.circular(16),
                       ),
                       child: drink['image_url'] != null && drink['image_url'].toString().isNotEmpty
-                          ? Image.network(
-                              drink['image_url'],
+                          ? CachedNetworkImage(
+                              imageUrl: drink['image_url'],
                               height: 140,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
+                              placeholder: (context, url) => Container(
+                                height: 140,
+                                color: Colors.grey[300],
+                                child: const Center(child: CircularProgressIndicator()),
+                              ),
+                              errorWidget: (context, url, error) => Container(
                                 height: 140,
                                 color: Colors.grey[300],
                                 child: const Icon(Icons.broken_image, size: 48),
