@@ -33,21 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //final authServices = AuthServices();
 
     return Scaffold(
-      /* appBar: AppBar(
-        title: const Text('Tempo Cafe'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authServices.signOut();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, '/');
-              }
-            },
-            tooltip: 'Sign Out',
-          ),
-        ],
-      ), */
+      
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
