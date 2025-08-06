@@ -12,6 +12,7 @@ dependencies:
 
   supabase_flutter: ^2.0.0
   cached_network_image: ^3.3.1 # Add this line
+  google_nav_bar: ^5.0.7
 
 dev_dependencies:
   flutter_test:
