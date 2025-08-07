@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     // Home tab will show drink menu cards
     // Placeholder for Order
-    
     const HomeScreen(),
     const MenuScreen(),
     // Account Screen
@@ -52,12 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
       future: _fetchMenu(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return SliverFillRemaining(
+            child: const Center(child: CircularProgressIndicator()),
+          );
         }
         final drinks = snapshot.data!;
-        return ListView.builder(
+        return SliverList.builder(
           itemCount: drinks.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (sliverContext, index) {
             final drink = drinks[index];
             return Card(
               shape: RoundedRectangleBorder(
@@ -73,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     ),
-                    child: drink['image_url'] != null && drink['image_url'].toString().isNotEmpty
+                    child:
+                        drink['image_url'] != null &&
+                            drink['image_url'].toString().isNotEmpty
                         ? CachedNetworkImage(
                             imageUrl: drink['image_url'],
                             height: 120,
@@ -92,14 +95,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                     child: Text(
                       drink['drink_name'] ?? '',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       drink['description'] ?? 'Delicious drink',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -108,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -131,12 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyContent;
-    if (_selectedIndex == 0) {
-      bodyContent = _buildMenuCards(context);
-    } else {
-      bodyContent = _widgetOptions.elementAt(_selectedIndex);
-    }
+    final bodyContent = _selectedIndex == 0
+        ? _buildMenuCards(context)
+        : SliverFillRemaining(child: _widgetOptions[_selectedIndex]);
 
     return Scaffold(
       body: CustomScrollView(
@@ -152,9 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ), */
             ),
           ),
-          SliverFillRemaining(
-            child: bodyContent,
-          ),
+          bodyContent,
         ],
       ),
       bottomNavigationBar: Container(
@@ -165,12 +169,15 @@ class _HomeScreenState extends State<HomeScreen> {
           hoverColor: Theme.of(context).colorScheme.secondary,
           backgroundColor: Theme.of(context).colorScheme.surface,
           color: Theme.of(context).colorScheme.secondary,
-          activeColor: Theme.of(context).colorScheme.primary, // Use onSurface color for the active icon and label
-          tabBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          activeColor: Theme.of(context)
+              .colorScheme
+              .primary, // Use onSurface color for the active icon and label
+          tabBackgroundColor: Theme.of(
+            context,
+          ).colorScheme.primary.withOpacity(0.1),
           tabBorderRadius: 60,
           haptic: true,
-          tabs: 
-          [
+          tabs: [
             GButton(
               icon: Icons.home,
               text: 'Menu',
@@ -192,13 +199,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           selectedIndex: _selectedIndex,
           onTabChange: _onItemTapped,
+
           //backgroundColor: Theme.of(context).colorScheme.surface, // Use surface color for the background
           //color: Theme.of(context).colorScheme.onSurface, // Use onSurface color for the icon and label
-                  //tabBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1,)
-          
+          //tabBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1,)
         ),
-      )
-              
+      ),
     );
   }
 }
