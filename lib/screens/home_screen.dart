@@ -47,115 +47,123 @@ class _HomeScreenState extends State<HomeScreen> {
     return response; // response is already a List
   }
 
-  Widget _buildMenuCards(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: _fetchMenu(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final drinks = snapshot.data!;
-        return ListView.builder(
-          itemCount: drinks.length,
-          itemBuilder: (context, index) {
-            final drink = drinks[index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
-                    child: drink['image_url'] != null && drink['image_url'].toString().isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: drink['image_url'],
-                            height: 120,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.broken_image, size: 48),
-                          )
-                        : Container(
-                            height: 120,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.local_drink, size: 48),
-                          ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                    child: Text(
-                      drink['drink_name'] ?? '',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      drink['description'] ?? 'Delicious drink',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        minimumSize: const Size.fromHeight(40),
-                      ),
-                      onPressed: () {
-                        // Add your action here
-                      },
-                      child: const Text('Order now'),
-                    ),
-                  ),
-                ],
-              ),
+  List<Widget> _buildMenuCardsSliver(BuildContext context) {
+    return [
+      FutureBuilder<List<dynamic>>(
+        future: _fetchMenu(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SliverFillRemaining(
+              child: const Center(child: CircularProgressIndicator()),
             );
-          },
-        );
-      },
-    );
+          }
+          final drinks = snapshot.data!;
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final drink = drinks[index];
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                        child: drink['image_url'] != null && drink['image_url'].toString().isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: drink['image_url'],
+                                height: 120,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.broken_image, size: 48),
+                              )
+                            : Container(
+                                height: 120,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.local_drink, size: 48),
+                              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                        child: Text(
+                          drink['drink_name'] ?? '',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          drink['description'] ?? 'Delicious drink',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            minimumSize: const Size.fromHeight(40),
+                          ),
+                          onPressed: () {
+                            // Add your action here
+                          },
+                          child: const Text('Order now'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              childCount: drinks.length,
+            ),
+          );
+        },
+      ),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyContent;
+    List<Widget> slivers = [
+      SliverAppBar(
+        pinned: true,
+        floating: false,
+        expandedHeight: 140.0,
+        flexibleSpace: FlexibleSpaceBar(
+          title: Text('${_getGreeting()}, User!'),
+          background: Container(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
+    ];
+
     if (_selectedIndex == 0) {
-      bodyContent = _buildMenuCards(context);
+      slivers.addAll(_buildMenuCardsSliver(context));
     } else {
-      bodyContent = _widgetOptions.elementAt(_selectedIndex);
+      slivers.add(
+        SliverFillRemaining(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+      );
     }
 
     return Scaffold(
       body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: false,
-            floating: false,
-            //expandedHeight: 140.0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text('${_getGreeting()}, User!'),
-              /* background: Container(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-              ), */
-            ),
-          ),
-          SliverFillRemaining(
-            child: bodyContent,
-          ),
-        ],
+        slivers: slivers,
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
