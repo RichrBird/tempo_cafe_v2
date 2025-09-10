@@ -37,6 +37,14 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    signingConfigs {
+        create("release") {
+             //storeFile = file("keystore/tempo_release.keystore") 
+             //storePassword = System.getenv("TEMPO_KEYSTORE_PASSWORD") ?: project.findProperty("TEMPO_KEYSTORE_PASSWORD") as String keyAlias = System.getenv("TEMPO_KEY_ALIAS") ?: project.findProperty("TEMPO_KEY_ALIAS") as String keyPassword = System.getenv("TEMPO_KEY_PASSWORD") ?: project.findProperty("TEMPO_KEY_PASSWORD") as String } } buildTypes { release { signingConfig = signingConfigs.getByName("release") // ... other settings (minify, shrinker) later
+             }
+            }
+
 }
 
 flutter {
